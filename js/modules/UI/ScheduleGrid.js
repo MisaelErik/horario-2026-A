@@ -1,0 +1,140 @@
+import { DOM } from './DOM.js';
+import { State } from '../State.js';
+import { TimeUtils } from '../TimeUtils.js';
+
+export const ScheduleGrid = {
+    _startHour: 8,
+    _pixelsPerMinute: 0.9,
+
+    renderScheduleGrid(startHour = 8) {
+        const scheduleBody = DOM.getElement('scheduleBody');
+        const days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+        const endHour = 23;
+        const pixelsPerMinute = 0.9;
+
+        scheduleBody.innerHTML = '';
+        this._startHour = startHour;
+        this._pixelsPerMinute = pixelsPerMinute;
+
+        for (let hour = startHour; hour < endHour; hour++) {
+            const row = document.createElement('tr');
+
+            // Time cell
+            const timeCell = document.createElement('td');
+            timeCell.className = 'border-b border-slate-100 dark:border-slate-800/60 p-2 font-mono text-xs font-bold text-slate-500 dark:text-slate-400 sticky left-0 bg-white/90 dark:bg-[#1a1f2e]/90 backdrop-blur-sm z-10 text-right align-top min-w-[60px] select-none';
+            timeCell.style.height = `${60 * pixelsPerMinute}px`;
+            timeCell.innerHTML = `<span class="text-sm font-bold">${String(hour).padStart(2, '0')}<span class="text-xs font-normal text-slate-400 dark:text-slate-500">:00</span></span>`;
+            row.appendChild(timeCell);
+
+            days.forEach(() => {
+                const cell = document.createElement('td');
+                cell.className = 'border-b border-l border-slate-100 dark:border-slate-800/60 relative time-slot hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 transition-colors duration-150';
+                row.appendChild(cell);
+            });
+            scheduleBody.appendChild(row);
+        }
+    },
+
+    getEarliestHour(selectedCourses) {
+        let earliest = 23;
+        selectedCourses.forEach(({ seccion }) => {
+            seccion.clases.forEach(clase => {
+                const range = TimeUtils.parseTimeRange(clase.hora);
+                const hour = Math.floor(range.start / 60);
+                if (hour < earliest) earliest = hour;
+            });
+        });
+        return earliest === 23 ? 8 : earliest;
+    },
+
+    renderScheduleEvents(selectedCourses) {
+        // Clear previous events
+        document.querySelectorAll('.class-block').forEach(el => el.remove());
+
+        const scheduleBody = DOM.getElement('scheduleBody');
+        const days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+        const startHour = this._startHour || 8;
+        const pixelsPerMinute = this._pixelsPerMinute || 0.9;
+
+        // Group all classes by day to allow merging adjacent blocks from same course
+        const dayMap = {}; // dayIndex -> [{curso, seccion, clase, range}]
+        days.forEach((_, i) => dayMap[i] = []);
+
+        selectedCourses.forEach(selected => {
+            const { curso, seccion } = selected;
+            seccion.clases.forEach(clase => {
+                const range = TimeUtils.parseTimeRange(clase.hora);
+                const dayIndex = days.indexOf(clase.dia);
+                if (dayIndex === -1) return;
+                dayMap[dayIndex].push({ curso, seccion, clase, range });
+            });
+        });
+
+        // For each day, sort by start time then merge adjacent blocks from same course
+        Object.entries(dayMap).forEach(([dayIndexStr, items]) => {
+            const dayIndex = parseInt(dayIndexStr);
+            if (items.length === 0) return;
+
+            // Sort by start time
+            items.sort((a, b) => a.range.start - b.range.start);
+
+            // Merge consecutive blocks from the same course
+            const merged = [];
+            items.forEach(item => {
+                const last = merged[merged.length - 1];
+                if (last && last.curso.codigo === item.curso.codigo && last.mergedEnd === item.range.start) {
+                    // Extend the last block
+                    last.mergedEnd = item.range.end;
+                    last.aulas.push(item.clase.aula);
+                } else {
+                    merged.push({
+                        curso: item.curso,
+                        seccion: item.seccion,
+                        clase: item.clase,
+                        mergedStart: item.range.start,
+                        mergedEnd: item.range.end,
+                        aulas: [item.clase.aula],
+                    });
+                }
+            });
+
+            merged.forEach(block => {
+                const { curso, seccion, clase, mergedStart, mergedEnd, aulas } = block;
+                const isDark = document.documentElement.classList.contains('dark');
+                const color = State.getColor(curso.codigo);
+                const borderColor = State.darkenColor(color, isDark ? 40 : -40);
+                const textColor = isDark ? '#f8fafc' : State.darkenColor(color, -100);
+
+                const top = (mergedStart - startHour * 60) * pixelsPerMinute;
+                const height = (mergedEnd - mergedStart) * pixelsPerMinute;
+
+                const blockEl = document.createElement('div');
+                blockEl.className = 'class-block absolute left-0.5 right-0.5 rounded-xl p-2 text-xs border-l-4 shadow-md hover:shadow-xl transition-all duration-200 z-20 cursor-pointer overflow-hidden';
+                blockEl.style.top = `${top}px`;
+                blockEl.style.height = `${height}px`;
+                blockEl.style.backgroundColor = color;
+                blockEl.style.borderColor = borderColor;
+                blockEl.style.color = textColor;
+                blockEl.style.minHeight = '40px';
+
+                const durationMin = mergedEnd - mergedStart;
+                const aulaText = [...new Set(aulas)].join(', ');
+                const seccion_id = seccion.id;
+
+                blockEl.innerHTML = `
+                    <div class="flex flex-col h-full justify-center items-center text-center gap-0.5 overflow-hidden px-1">
+                        <strong class="font-bold leading-tight text-[10px] sm:text-[11px] block w-full" style="white-space: normal; word-break: break-word;">${curso.nombre}</strong>
+                        ${durationMin > 40 ? `<span class="text-[9px] sm:text-[10px] font-semibold opacity-90">${aulaText} - Sec. ${seccion_id}</span>` : ''}
+                        ${durationMin > 60 ? `<span class="text-[8px] sm:text-[9px] opacity-80 leading-tight">${seccion.docente}</span>` : ''}
+                        ${durationMin > 60 ? `<span class="text-[9px] sm:text-[10px] opacity-80">${clase.hora}</span>` : ''}
+                    </div>
+                `;
+
+                const targetCell = scheduleBody.rows[0]?.cells[dayIndex + 1];
+                if (targetCell) {
+                    targetCell.appendChild(blockEl);
+                }
+            });
+        });
+    }
+};
