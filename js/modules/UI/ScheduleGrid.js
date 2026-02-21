@@ -6,10 +6,9 @@ export const ScheduleGrid = {
     _startHour: 8,
     _pixelsPerMinute: 0.9,
 
-    renderScheduleGrid(startHour = 8) {
+    renderScheduleGrid(startHour = 8, endHour = 23) {
         const scheduleBody = DOM.getElement('scheduleBody');
         const days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-        const endHour = 23;
         const pixelsPerMinute = 0.9;
 
         scheduleBody.innerHTML = '';
@@ -35,16 +34,32 @@ export const ScheduleGrid = {
         }
     },
 
-    getEarliestHour(selectedCourses) {
+    getScheduleBounds(selectedCourses) {
+        if (selectedCourses.length === 0) return { start: 8, end: 23 };
+
         let earliest = 23;
+        let latest = 8;
+
         selectedCourses.forEach(({ seccion }) => {
             seccion.clases.forEach(clase => {
                 const range = TimeUtils.parseTimeRange(clase.hora);
-                const hour = Math.floor(range.start / 60);
-                if (hour < earliest) earliest = hour;
+                const startHour = Math.floor(range.start / 60);
+                const endHour = Math.ceil(range.end / 60);
+
+                if (startHour < earliest) earliest = startHour;
+                if (endHour > latest) latest = endHour;
             });
         });
-        return earliest === 23 ? 8 : earliest;
+
+        // Margen de seguridad y límites
+        const start = Math.max(0, earliest);
+        const end = Math.min(24, latest);
+
+        return { start, end: end <= start ? start + 1 : end };
+    },
+
+    getEarliestHour(selectedCourses) {
+        return this.getScheduleBounds(selectedCourses).start;
     },
 
     renderScheduleEvents(selectedCourses) {

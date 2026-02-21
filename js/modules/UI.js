@@ -21,8 +21,9 @@ export const UI = {
     renderCourseList(coursesData, selectedCourses) { return CourseList.renderCourseList(coursesData, selectedCourses); },
 
     // ScheduleGrid Proxies
-    renderScheduleGrid(startHour) { return ScheduleGrid.renderScheduleGrid(startHour); },
+    renderScheduleGrid(startHour, endHour) { return ScheduleGrid.renderScheduleGrid(startHour, endHour); },
     getEarliestHour(selectedCourses) { return ScheduleGrid.getEarliestHour(selectedCourses); },
+    getScheduleBounds(selectedCourses) { return ScheduleGrid.getScheduleBounds(selectedCourses); },
     renderScheduleEvents(selectedCourses) { return ScheduleGrid.renderScheduleEvents(selectedCourses); },
 
     // SelectedList Proxies

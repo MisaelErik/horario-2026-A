@@ -135,7 +135,8 @@ function setupEventListeners() {
         const exportOptions = [
             { id: 'download-png-menu', format: 'png', msg: 'Generando Imagen...' },
             { id: 'download-pdf-menu', format: 'pdf', msg: 'Generando PDF...' },
-            { id: 'download-excel-menu', format: 'excel', msg: 'Generando Excel...' }
+            { id: 'download-excel-menu', format: 'excel', msg: 'Generando Excel...' },
+            { id: 'download-ics-menu', format: 'ics', msg: 'Generando Calendario...' }
         ];
 
         exportOptions.forEach(opt => {
@@ -148,6 +149,8 @@ function setupEventListeners() {
 
                     if (opt.format === 'excel') {
                         Export.downloadExcel('schedule-table');
+                    } else if (opt.format === 'ics') {
+                        Export.downloadICS();
                     } else {
                         Export.downloadSchedule(opt.format, 'schedule-container');
                     }
@@ -163,10 +166,10 @@ function setupEventListeners() {
             UI.showToast('Primero selecciona cursos para recortar el horario', 'error', true);
             return;
         }
-        const earliest = UI.getEarliestHour(selected);
-        UI.renderScheduleGrid(earliest);
+        const { start, end } = UI.getScheduleBounds(selected);
+        UI.renderScheduleGrid(start, end);
         UI.renderScheduleEvents(selected);
-        UI.showToast(`Horario recortado desde las ${earliest}:00 ✂️`);
+        UI.showToast(`Horario ajustado: ${start}:00 a ${end}:00 ✂️`);
     });
 }
 
@@ -241,6 +244,8 @@ function removeCourseCallback(courseCode) {
 
 function updateUI() {
     const selectedFields = State.getSelectedCourses();
+    const { start, end } = UI.getScheduleBounds(selectedFields);
+    UI.renderScheduleGrid(start, end);
     UI.renderScheduleEvents(selectedFields);
     UI.renderSelectedList(selectedFields, removeCourseCallback);
 }

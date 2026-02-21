@@ -11,7 +11,7 @@ export const Export = {
         }
 
         const studentName = prompt("Ingresa tu nombre para el horario (opcional):");
-        const earliestHour = UI.getEarliestHour(selectedCourses);
+        const { start: earliestHour, end: endHour } = UI.getScheduleBounds(selectedCourses);
         const isDarkMode = document.documentElement.classList.contains('dark');
 
         // Paleta de colores según tema
@@ -89,7 +89,6 @@ export const Export = {
         table.appendChild(thead);
 
         const tbody = document.createElement('tbody');
-        const endHour = 23;
         for (let h = earliestHour; h < endHour; h++) {
             const tr = document.createElement('tr');
             tr.style.height = `${60 * pixelsPerMinute}px`;
@@ -211,8 +210,7 @@ export const Export = {
             return;
         }
 
-        const earliestHour = UI.getEarliestHour(selectedCourses);
-        const endHour = 23;
+        const { start: earliestHour, end: endHour } = UI.getScheduleBounds(selectedCourses);
         const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
         const numRows = endHour - earliestHour;
 
@@ -275,5 +273,86 @@ export const Export = {
         const wb = window.XLSX.utils.book_new();
         window.XLSX.utils.book_append_sheet(wb, ws, 'Horario');
         window.XLSX.writeFile(wb, 'Horario_2026A.xlsx');
+    },
+
+    downloadICS() {
+        const selectedCourses = State.getSelectedCourses();
+        if (selectedCourses.length === 0) {
+            UI.showToast("No hay cursos seleccionados para exportar.", "error", true);
+            return;
+        }
+
+        // Configuración del ciclo 2026-A (FCA - UNAC)
+        const cicloStartStr = "20260401"; // Miércoles 01 de Abril
+        const cicloEndStr = "20260721";   // Martes 21 de Julio
+
+        let icsContent = [
+            "BEGIN:VCALENDAR",
+            "VERSION:2.0",
+            "PRODID:-//Antigravity//Horario UNAC 2026-A//ES",
+            "CALSCALE:GREGORIAN",
+            "METHOD:PUBLISH",
+            "X-WR-CALNAME:Horario UNAC 2026-A",
+            "X-WR-TIMEZONE:America/Lima"
+        ];
+
+        const dayMap = {
+            'Lun': { code: 'MO', jsDay: 1 },
+            'Mar': { code: 'TU', jsDay: 2 },
+            'Mié': { code: 'WE', jsDay: 3 },
+            'Jue': { code: 'TH', jsDay: 4 },
+            'Vie': { code: 'FR', jsDay: 5 },
+            'Sáb': { code: 'SA', jsDay: 6 }
+        };
+
+        const cycleStartDate = new Date(2026, 3, 1); // 1 de Abril 2026
+
+        selectedCourses.forEach(selected => {
+            const { curso, seccion } = selected;
+
+            seccion.clases.forEach(clase => {
+                const dayInfo = dayMap[clase.dia];
+                if (!dayInfo) return;
+
+                const range = TimeUtils.parseTimeRange(clase.hora);
+
+                // Calcular la fecha de la primera ocurrencia (desde el 1 de Abril)
+                const diff = (dayInfo.jsDay - cycleStartDate.getDay() + 7) % 7;
+                const firstOccDate = new Date(2026, 3, 1 + diff);
+
+                const startTime = new Date(firstOccDate.getFullYear(), firstOccDate.getMonth(), firstOccDate.getDate(),
+                    Math.floor(range.start / 60), range.start % 60);
+                const endTime = new Date(firstOccDate.getFullYear(), firstOccDate.getMonth(), firstOccDate.getDate(),
+                    Math.floor(range.end / 60), range.end % 60);
+
+                const formatDate = (date) => {
+                    return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+                };
+
+                const stamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+                const uid = `${Date.now()}-${curso.codigo}-${seccion.id}-${clase.dia}@unac.edu.pe`;
+
+                icsContent.push("BEGIN:VEVENT");
+                icsContent.push(`UID:${uid}`);
+                icsContent.push(`DTSTAMP:${stamp}`);
+                icsContent.push(`DTSTART;TZID=America/Lima:${formatDate(startTime).replace('Z', '')}`);
+                icsContent.push(`DTEND;TZID=America/Lima:${formatDate(endTime).replace('Z', '')}`);
+                icsContent.push(`RRULE:FREQ=WEEKLY;UNTIL=${cicloEndStr}T235959Z;BYDAY=${dayInfo.code}`);
+                icsContent.push(`SUMMARY:${curso.nombre} (Sec. ${seccion.id})`);
+                icsContent.push(`LOCATION:${clase.aula}`);
+                icsContent.push(`DESCRIPTION:Docente: ${seccion.docente}\\nTipo: ${clase.tipo === 'T' ? 'Teoría' : 'Práctica'}`);
+                icsContent.push("END:VEVENT");
+            });
+        });
+
+        icsContent.push("END:VCALENDAR");
+
+        const blob = new Blob([icsContent.join("\r\n")], { type: 'text/calendar;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = "Horario_UNAC_2026A.ics";
+        link.click();
+
+        UI.showToast("Archivo .ics descargado. Ábrelo para sincronizar tu calendario.", "success", true);
     }
 };
