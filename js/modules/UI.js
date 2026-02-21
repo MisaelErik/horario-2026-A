@@ -34,5 +34,5 @@ export const UI = {
     // Modals & Toasts Proxies
     showConflictModal(message, onReplace, onCancel) { return Modals.showConflictModal(message, onReplace, onCancel); },
     closeModal() { return Modals.closeModal(); },
-    showToast(message, type) { return Toasts.showToast(message, type); }
+    showToast(message, type, isImportant) { return Toasts.showToast(message, type, isImportant); }
 };

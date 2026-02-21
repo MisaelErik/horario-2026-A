@@ -97,15 +97,15 @@ function setupEventListeners() {
     const exportBtnExcel = document.getElementById('download-excel-btn');
 
     if (exportBtnPdf) exportBtnPdf.addEventListener('click', () => {
-        UI.showToast("Generando PDF, por favor espera...", "info");
+        UI.showToast("Generando PDF, por favor espera...", "info", true);
         Export.downloadSchedule('pdf', 'schedule-container');
     });
     if (exportBtnPng) exportBtnPng.addEventListener('click', () => {
-        UI.showToast("Generando Imagen, por favor espera...", "info");
+        UI.showToast("Generando Imagen, por favor espera...", "info", true);
         Export.downloadSchedule('png', 'schedule-container');
     });
     if (exportBtnExcel) exportBtnExcel.addEventListener('click', () => {
-        UI.showToast("Generando Excel, por favor espera...", "info");
+        UI.showToast("Generando Excel, por favor espera...", "info", true);
         Export.downloadExcel('schedule-table');
     });
 
@@ -123,17 +123,17 @@ function setupEventListeners() {
     // Mobile export menu links
     document.getElementById('download-png-menu')?.addEventListener('click', (e) => {
         e.preventDefault();
-        UI.showToast("Generando Imagen, por favor espera...", "info");
+        UI.showToast("Generando Imagen, por favor espera...", "info", true);
         Export.downloadSchedule('png', 'schedule-container');
     });
     document.getElementById('download-pdf-menu')?.addEventListener('click', (e) => {
         e.preventDefault();
-        UI.showToast("Generando PDF, por favor espera...", "info");
+        UI.showToast("Generando PDF, por favor espera...", "info", true);
         Export.downloadSchedule('pdf', 'schedule-container');
     });
     document.getElementById('download-excel-menu')?.addEventListener('click', (e) => {
         e.preventDefault();
-        UI.showToast("Generando Excel, por favor espera...", "info");
+        UI.showToast("Generando Excel, por favor espera...", "info", true);
         Export.downloadExcel('schedule-table');
     });
 
@@ -141,7 +141,7 @@ function setupEventListeners() {
     document.getElementById('trim-schedule-btn')?.addEventListener('click', () => {
         const selected = State.getSelectedCourses();
         if (selected.length === 0) {
-            UI.showToast('Primero selecciona cursos para recortar el horario', 'error');
+            UI.showToast('Primero selecciona cursos para recortar el horario', 'error', true);
             return;
         }
         const earliest = UI.getEarliestHour(selected);
@@ -163,9 +163,7 @@ function handleCourseSelection(courseCode, sectionId) {
     const alreadySelected = State.getSelectedCourses().some(c => c.curso.codigo === courseCode && c.seccion.id === sectionId);
 
     if (alreadySelected) {
-        State.removeCourse(courseCode);
-        UI.showToast(`${course.nombre} removido`, 'info');
-        updateUI();
+        // Si ya está seleccionada esta sección exacta, no hacemos nada (evita remociones accidentales)
         return;
     }
 
