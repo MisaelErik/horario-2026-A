@@ -1,1 +1,61 @@
-⨯਍꧂㈠㈰‶楍慳汥䔠楲⹫吠摯獯氠獯搠牥捥潨⁳敲敳癲摡獯മ䔊⁬獵Ɐ洠摯晩捩捡썩溳‬楤瑳楲畢楣돃⁮⁯潣楰⁡潮愠瑵牯穩摡⁡敤攠瑳⁥썣撳杩⁯⁯獥慴栠牥慲業湥慴猠⁥湥畣湥牴⁡整浲湩湡整敭瑮⁥牰桯扩摩⁯楳⁮汥瀠敲楶⁯⁹硥汰귃楣潴挠湯敳瑮浩敩瑮⁯敤⁬畡潴⁲牯杩湩污മ⨊യ椊灭牯⁴⁻佄⁍⁽牦浯✠⼮佄⹍獪㬧਍਍硥潰瑲挠湯瑳䴠摯污⁳‽ൻ †猠潨䍷湯汦捩䵴摯污挨湯汦捩䥴普Ɐ漠剮灥慬散‬湯慃据汥 ൻ †††挠湯瑳挠湯汦捩䵴獥慳敧㴠䐠䵏朮瑥汅浥湥⡴挧湯汦捩䵴獥慳敧⤧഻ †††挠湯瑳挠湯汦捩䵴摯污㴠䐠䵏朮瑥汅浥湥⡴挧湯汦捩䵴摯污⤧഻ †††挠湯瑳洠摯污潃瑮湥⁴‽佄⹍敧䕴敬敭瑮✨潭慤䍬湯整瑮⤧഻ഊ †††氠瑥洠杳㴠琠灹潥⁦潣普楬瑣湉潦㴠㴽✠瑳楲杮‧‿潣普楬瑣湉潦㨠䔠⁬畣獲⁯敳挠畲慺挠湯†汥搠懭†敤⸠※潣普楬瑣敍獳条⹥整瑸潃瑮湥⁴‽獭㭧਍††††潣普楬瑣潍慤⹬汣獡䱳獩⹴敲潭敶✨楨摤湥⤧഻ †††挠湯汦捩䵴摯污挮慬獳楌瑳愮摤✨汦硥⤧഻ഊ †††猠瑥楔敭畯⡴⤨㴠‾ൻ †††††洠摯污潃瑮湥⹴汣獡䱳獩⹴敲潭敶✨捳污ⵥ㔹Ⱗ✠灯捡瑩⵹✰㬩਍††††††潭慤䍬湯整瑮挮慬獳楌瑳愮摤✨捳污ⵥ〱✰‬漧慰楣祴ㄭ〰⤧഻ †††素‬〱㬩਍਍††††潣獮⁴敲汰捡䉥湴㴠搠捯浵湥⹴敧䕴敬敭瑮祂摉✨敲汰捡ⵥ潣牵敳戭湴⤧഻ †††挠湯瑳挠湡散䉬湴㴠搠捯浵湥⹴敧䕴敬敭瑮祂摉✨慣据汥挭湯汦捩⵴瑢❮㬩਍਍††††⼯䌠潬敮琠⁯敲潭敶漠摬氠獩整敮獲਍††††潣獮⁴敮剷灥慬散㴠爠灥慬散瑂⹮汣湯乥摯⡥牴敵㬩਍††††潣獮⁴敮䍷湡散⁬‽慣据汥瑂⹮汣湯乥摯⡥牴敵㬩਍਍††††敲汰捡䉥湴瀮牡湥乴摯⹥敲汰捡䍥楨摬渨睥敒汰捡ⱥ爠灥慬散瑂⥮഻ †††挠湡散䉬湴瀮牡湥乴摯⹥敲汰捡䍥楨摬渨睥慃据汥‬慣据汥瑂⥮഻ഊ †††渠睥敒汰捡⹥摡䕤敶瑮楌瑳湥牥✨汣捩❫‬⤨㴠‾ൻ †††††漠剮灥慬散⤨഻ †††††琠楨⹳汣獯䵥摯污⤨഻ †††素㬩਍਍††††敮䍷湡散⹬摡䕤敶瑮楌瑳湥牥✨汣捩❫‬⤨㴠‾ൻ †††††漠䍮湡散⡬㬩਍††††††桴獩挮潬敳潍慤⡬㬩਍††††⥽഻ †素ബഊ †挠潬敳潍慤⡬ ൻ †††挠湯瑳挠湯汦捩䵴摯污㴠䐠䵏朮瑥汅浥湥⡴挧湯汦捩䵴摯污⤧഻ †††挠湯瑳洠摯污潃瑮湥⁴‽佄⹍敧䕴敬敭瑮✨潭慤䍬湯整瑮⤧഻ഊ †††洠摯污潃瑮湥⹴汣獡䱳獩⹴敲潭敶✨捳污ⵥ〱✰‬漧慰楣祴ㄭ〰⤧഻ †††洠摯污潃瑮湥⹴汣獡䱳獩⹴摡⡤猧慣敬㤭✵‬漧慰楣祴〭⤧഻ †††猠瑥楔敭畯⡴⤨㴠‾ൻ †††††挠湯汦捩䵴摯污挮慬獳楌瑳愮摤✨楨摤湥⤧഻ †††††挠湯汦捩䵴摯污挮慬獳楌瑳爮浥癯⡥昧敬❸㬩਍††††ⱽ㈠〰㬩਍††ൽ紊഻
+/*
+© 2026 Misael Erik. Todos los derechos reservados.
+El uso, modificación, distribución o copia no autorizada de este código o esta herramienta se encuentra terminantemente prohibido sin el previo y explícito consentimiento del autor original.
+*/
+import { DOM } from './DOM.js';
+
+export const Modals = {
+    showConflictModal(conflictInfo, onReplace, onCancel) {
+        const conflictMessage = DOM.getElement('conflictMessage');
+        const conflictModal = DOM.getElement('conflictModal');
+        const modalContent = DOM.getElement('modalContent');
+
+        let message = `El curso se cruza con otro ya seleccionado.`;
+        if (conflictInfo && conflictInfo.conflictDetails) {
+            message = `El curso se cruza con ${conflictInfo.conflictDetails.courseName} el día ${conflictInfo.conflictDetails.day} de ${conflictInfo.conflictDetails.time}.`;
+        } else if (typeof conflictInfo === 'string') {
+            message = conflictInfo;
+        }
+
+        conflictMessage.textContent = message;
+        conflictModal.classList.remove('hidden');
+        conflictModal.classList.add('flex');
+
+        setTimeout(() => {
+            modalContent.classList.remove('scale-95', 'opacity-0');
+            modalContent.classList.add('scale-100', 'opacity-100');
+        }, 10);
+
+        const replaceBtn = document.getElementById('replace-course-btn');
+        const cancelBtn = document.getElementById('cancel-conflict-btn');
+
+        // Clone to remove old listeners
+        const newReplace = replaceBtn.cloneNode(true);
+        const newCancel = cancelBtn.cloneNode(true);
+
+        replaceBtn.parentNode.replaceChild(newReplace, replaceBtn);
+        cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+
+        newReplace.addEventListener('click', () => {
+            onReplace();
+            this.closeModal();
+        });
+
+        newCancel.addEventListener('click', () => {
+            onCancel();
+            this.closeModal();
+        });
+    },
+
+    closeModal() {
+        const conflictModal = DOM.getElement('conflictModal');
+        const modalContent = DOM.getElement('modalContent');
+
+        modalContent.classList.remove('scale-100', 'opacity-100');
+        modalContent.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            conflictModal.classList.add('hidden');
+            conflictModal.classList.remove('flex');
+        }, 200);
+    }
+};
