@@ -24,11 +24,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     facultySelector = document.getElementById('faculty-selector');
 
     // 2. Initial Sync/Check Faculty
-    const savedFaculty = localStorage.getItem('selected-faculty') || 'FCA';
-    const syncResult = await syncFacultyData(savedFaculty);
-
-    if (syncResult && facultySelector) {
-        facultySelector.classList.add('hidden');
+    const savedFaculty = localStorage.getItem('selected-faculty');
+    if (savedFaculty) {
+        const syncResult = await syncFacultyData(savedFaculty);
+        if (syncResult && facultySelector) {
+            facultySelector.classList.add('hidden');
+        }
     }
 
     // Initial Render (if not handled by sync)
@@ -76,7 +77,7 @@ async function syncFacultyData(facultyId) {
     } else if (cached) {
         return true; // We have cache at least
     } else {
-        UI.showToast(`No hallamos horarios en la nube para ${facultyId} todavía.`, "error", true);
+        UI.showToast(`Por el momento no está la programación horaria.`, "error", true);
         return false;
     }
 }
