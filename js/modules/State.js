@@ -96,5 +96,11 @@ export const State = {
 
         const colorIndex = this.colorIndex - 1;
         return colors[colorIndex % colors.length];
+    },
+
+    darkenColor(color, amount) {
+        return '#' + color.replace(/^#/, '').replace(/../g, color =>
+            ('0' + Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2)
+        );
     }
 };
