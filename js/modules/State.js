@@ -18,7 +18,14 @@ export const State = {
                 if (existingClass.dia === newClass.dia) {
                     const existingRange = TimeUtils.parseTimeRange(existingClass.hora);
                     if (newRange.start < existingRange.end && newRange.end > existingRange.start) {
-                        return { selectedCourse: selected, conflictDetails: { day: existingClass.dia, time: existingClass.hora, courseName: selected.curso.nombre } };
+                        return {
+                            selectedCourse: selected,
+                            conflictDetails: {
+                                day: existingClass.dia,
+                                time: existingClass.hora,
+                                courseName: selected.curso.nombre
+                            }
+                        };
                     }
                 }
             }
@@ -33,24 +40,21 @@ export const State = {
             this.selectedCourses.splice(existingCourseIndex, 1);
         }
 
-        // Assign color if not already assigned
+        // Assign color and add
         if (!this.courseColorMap[courseData.curso.codigo]) {
-            this.courseColorMap[courseData.curso.codigo] = {
-                light: this.colorsLight[this.colorIndex % this.colorsLight.length],
-                dark: this.colorsDark[this.colorIndex % this.colorsDark.length]
-            };
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            const colors = isDarkMode ? this.colorsDark : this.colorsLight;
+            this.courseColorMap[courseData.curso.codigo] = colors[this.colorIndex % colors.length];
             this.colorIndex++;
         }
 
         this.selectedCourses.push(courseData);
+        window.dispatchEvent(new CustomEvent('schedule-updated'));
     },
 
     removeCourse(courseCode) {
         this.selectedCourses = this.selectedCourses.filter(c => c.curso.codigo !== courseCode);
-    },
-
-    clearSchedule() {
-        this.selectedCourses = [];
+        window.dispatchEvent(new CustomEvent('schedule-updated'));
     },
 
     getSelectedCourses() {
@@ -58,40 +62,39 @@ export const State = {
     },
 
     setSelectedCourses(courses) {
-        this.selectedCourses = courses;
-        // Re-populate color map to ensure consistency when loading
-        courses.forEach(c => {
+        this.selectedCourses = courses || [];
+        // Re-map colors
+        this.courseColorMap = {};
+        this.colorIndex = 0;
+        const isDarkMode = document.documentElement.classList.contains('dark');
+        const colors = isDarkMode ? this.colorsDark : this.colorsLight;
+
+        this.selectedCourses.forEach(c => {
             if (!this.courseColorMap[c.curso.codigo]) {
-                this.courseColorMap[c.curso.codigo] = {
-                    light: this.colorsLight[this.colorIndex % this.colorsLight.length],
-                    dark: this.colorsDark[this.colorIndex % this.colorsDark.length]
-                };
+                this.courseColorMap[c.curso.codigo] = colors[this.colorIndex % colors.length];
                 this.colorIndex++;
             }
         });
+        window.dispatchEvent(new CustomEvent('schedule-updated'));
     },
 
-    getColor(courseCode, forceLight = false) {
-        const colorObj = this.courseColorMap[courseCode];
-        if (!colorObj) return '#e5e7eb';
-        if (forceLight) return colorObj.light;
-        const isDark = document.documentElement.classList.contains('dark');
-        return isDark ? colorObj.dark : colorObj.light;
+    clearSchedule() {
+        this.selectedCourses = [];
+        this.courseColorMap = {};
+        this.colorIndex = 0;
+        window.dispatchEvent(new CustomEvent('schedule-updated'));
     },
 
-    darkenColor(hex, amount) {
-        let usePound = false;
-        if (hex[0] == "#") {
-            hex = hex.slice(1);
-            usePound = true;
+    getCourseColor(courseCode) {
+        const isDarkMode = document.documentElement.classList.contains('dark');
+        const colors = isDarkMode ? this.colorsDark : this.colorsLight;
+
+        if (!this.courseColorMap[courseCode]) {
+            this.courseColorMap[courseCode] = colors[this.colorIndex % colors.length];
+            this.colorIndex++;
         }
-        let num = parseInt(hex, 16);
-        let r = (num >> 16) + amount;
-        if (r > 255) r = 255; else if (r < 0) r = 0;
-        let g = ((num >> 8) & 0x00FF) + amount;
-        if (g > 255) g = 255; else if (g < 0) g = 0;
-        let b = (num & 0x0000FF) + amount;
-        if (b > 255) b = 255; else if (b < 0) b = 0;
-        return (usePound ? "#" : "") + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
+
+        const colorIndex = this.colorIndex - 1;
+        return colors[colorIndex % colors.length];
     }
 };
