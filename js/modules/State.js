@@ -85,7 +85,7 @@ export const State = {
         window.dispatchEvent(new CustomEvent('schedule-updated'));
     },
 
-    getCourseColor(courseCode) {
+    getColor(courseCode) {
         const isDarkMode = document.documentElement.classList.contains('dark');
         const colors = isDarkMode ? this.colorsDark : this.colorsLight;
 

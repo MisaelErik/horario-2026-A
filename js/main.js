@@ -348,11 +348,13 @@ function setupEventListeners() {
     });
 
     // Cambiar Facultad desde el Footer
-    document.querySelector('[onclick*="faculty-selector"]')?.removeAttribute('onclick');
-    document.querySelector('button[class*="text-indigo-500"]')?.addEventListener('click', () => {
-        facultySelector.classList.remove('hidden');
-        if (window.lucide) window.lucide.createIcons();
-    });
+    const changeFacultyBtn = document.getElementById('change-faculty-footer-btn');
+    if (changeFacultyBtn) {
+        changeFacultyBtn.addEventListener('click', () => {
+            facultySelector.classList.remove('hidden', 'opacity-0', 'scale-95');
+            if (window.lucide) window.lucide.createIcons();
+        });
+    }
 
     // Verificar si ya existe preferencia
     if (localStorage.getItem('selected-faculty') === 'FCA') {
