@@ -40,7 +40,7 @@ window.facultyNames = {
 function updateSubtitle(facultyId) {
     const subtitle = document.getElementById('faculty-subtitle');
     if (subtitle) {
-        const name = window.facultyNames[facultyId] || ('Facultad ' + facultyId);
+        const name = window.facultyNames[facultyId] || facultyId;
         subtitle.textContent = `${name} - UNAC`;
     }
 }
@@ -222,6 +222,12 @@ async function syncFacultyData(facultyId) {
         if (title) title.textContent = "¡Horario no encontrado!";
         if (desc) desc.textContent = "Parece que esta carrera aún no tiene base de datos. Sigue los pasos de arriba para obtener tu horario y subirlo aquí.";
 
+        // Hide faculty selector so the instructions are clear
+        if (facultySelector) {
+            facultySelector.classList.add('hidden');
+        }
+
+        modal.dataset.pendingFaculty = facultyId;
         modal.classList.remove('hidden');
         return false;
     }
@@ -244,13 +250,21 @@ function setupEventListeners() {
             const desc = document.getElementById('upload-modal-desc');
             if (title) title.textContent = "Actualizar Horario";
             if (desc) desc.textContent = "Sube un nuevo archivo oficial para actualizar o reemplazar tu horario actual.";
-            if (customUploadModal) customUploadModal.classList.remove('hidden');
+            if (customUploadModal) {
+                customUploadModal.dataset.pendingFaculty = "";
+                customUploadModal.classList.remove('hidden');
+            }
         });
     }
 
     if (closeUploadModalBtn) {
         closeUploadModalBtn.addEventListener('click', () => {
             if (customUploadModal) customUploadModal.classList.add('hidden');
+            
+            // If we don't have a selected faculty, show the selector back
+            if (!localStorage.getItem('selected-faculty') && facultySelector) {
+                facultySelector.classList.remove('hidden');
+            }
         });
     }
 
@@ -306,12 +320,14 @@ function setupEventListeners() {
 
                 const processedCourses = processScheduleRowsManual(rows);
 
-                const currentFaculty = localStorage.getItem('selected-faculty') || 'ADM';
+                const currentFaculty = customUploadModal.dataset.pendingFaculty || localStorage.getItem('selected-faculty') || 'ADM';
 
                 localStorage.setItem(`cache-courses-${currentFaculty}`, JSON.stringify({
                     courses: processedCourses,
                     uploadedAt: Date.now()
                 }));
+
+                localStorage.setItem('selected-faculty', currentFaculty);
 
                 activeCoursesData = processedCourses;
                 UI.populateCycleFilter(activeCoursesData);

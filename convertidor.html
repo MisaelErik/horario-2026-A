@@ -38,21 +38,27 @@
         <!-- Faculty Selection -->
         <div class="bg-indigo-50 border border-indigo-100 p-6 rounded-2xl space-y-4">
             <h3 class="font-bold text-indigo-900 flex items-center gap-2">
-                <i data-lucide="building-2" class="w-5 h-5"></i> Selecciona la Facultad Destino
+                <i data-lucide="building-2" class="w-5 h-5"></i> Selecciona la Carrera Destino
             </h3>
             <select id="facultySelect"
                 class="w-full p-3 rounded-xl border-2 border-indigo-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all font-medium text-slate-700">
-                <option value="FCA">Ciencias Administrativas (FCA)</option>
-                <option value="FCC">Ciencias Contables (FCC)</option>
-                <option value="FCE">Ciencias Económicas (FCE)</option>
-                <option value="FIIS">Ingeniería Industrial y de Sistemas (FIIS)</option>
-                <option value="FIEE">Ingeniería Eléctrica y Electrónica (FIEE)</option>
-                <option value="FIME">Ingeniería Mecánica y de Energía (FIME)</option>
-                <option value="FIPA">Ingeniería Pesquera y de Alimentos (FIPA)</option>
-                <option value="FIQ">Ingeniería Química (FIQ)</option>
-                <option value="FCNM">C. Naturales y Matemática (FCNM)</option>
-                <option value="FCS">Ciencias de la Salud (FCS)</option>
-                <option value="FIARN">Ambiente y Rec. Naturales (FIARN)</option>
+                <option value="ADM">Administración</option>
+                <option value="CON">Contabilidad</option>
+                <option value="ECO">Economía</option>
+                <option value="EDF">Educación Física</option>
+                <option value="ENF">Enfermería</option>
+                <option value="FIS">Física</option>
+                <option value="IARN">Ingeniería Ambiental y RR.NN.</option>
+                <option value="IAL">Ingeniería de Alimentos</option>
+                <option value="ISI">Ingeniería de Sistemas</option>
+                <option value="IEL">Ingeniería Eléctrica</option>
+                <option value="IEO">Ingeniería Electrónica</option>
+                <option value="IEN">Ingeniería en Energía</option>
+                <option value="IIN">Ingeniería Industrial</option>
+                <option value="IME">Ingeniería Mecánica</option>
+                <option value="IPE">Ingeniería Pesquera</option>
+                <option value="IQU">Ingeniería Química</option>
+                <option value="MAT">Matemática</option>
             </select>
         </div>
 
@@ -463,7 +469,7 @@
             const faculty = facultySelect.value;
             const facultyName = facultySelect.options[facultySelect.selectedIndex].text;
 
-            if (!confirm(`¿Estás seguro de subir los datos a Firebase para la facultad ${facultyName}?`)) return;
+            if (!confirm(`¿Estás seguro de subir los datos a Firebase para la carrera ${facultyName}?`)) return;
 
             uploadFirebaseBtn.disabled = true;
             uploadFirebaseBtn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Subiendo...`;
@@ -472,7 +478,7 @@
             try {
                 if (typeof db === 'undefined' || !db) throw new Error("Firebase no está inicializado correctamente.");
 
-                await db.collection("faculties").doc(faculty).set({
+                await db.collection("careers").doc(faculty).set({
                     id: faculty,
                     name: facultyName,
                     courses: currentJsonData,

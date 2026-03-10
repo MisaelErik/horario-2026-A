@@ -30,7 +30,7 @@ export const FirebaseSync = {
         if (!this.db) return null;
 
         try {
-            const doc = await this.db.collection("faculties").doc(facultyId).get();
+            const doc = await this.db.collection("careers").doc(facultyId).get();
             if (doc.exists) {
                 return doc.data();
             }
