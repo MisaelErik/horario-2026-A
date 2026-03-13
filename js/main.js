@@ -19,28 +19,13 @@ window.Schedule = State;
 window.TimeUtils = TimeUtils;
 window.facultyNames = {
     'ADM': 'Administración',
-    'CON': 'Contabilidad',
-    'ECO': 'Economía',
-    'EDF': 'Educación Física',
-    'ENF': 'Enfermería',
-    'FIS': 'Física',
-    'IARN': 'Ing. Ambiental y de RR.NN.',
-    'IAL': 'Ingeniería de Alimentos',
-    'ISI': 'Ingeniería de Sistemas',
-    'IEL': 'Ingeniería Eléctrica',
-    'IEO': 'Ingeniería Electrónica',
-    'IEN': 'Ingeniería en Energía',
-    'IIN': 'Ingeniería Industrial',
-    'IME': 'Ingeniería Mecánica',
-    'IPE': 'Ingeniería Pesquera',
-    'IQU': 'Ingeniería Química',
-    'MAT': 'Matemática'
+    'FCA': 'Administración'
 };
 
 function updateSubtitle(facultyId) {
     const subtitle = document.getElementById('faculty-subtitle');
     if (subtitle) {
-        const name = window.facultyNames[facultyId] || facultyId;
+        const name = window.facultyNames[facultyId] || 'Administración';
         subtitle.textContent = `${name} - UNAC`;
     }
 }
@@ -55,52 +40,38 @@ document.addEventListener('DOMContentLoaded', async () => {
     const sharedId = urlParams.get('share');
 
     let initialSyncComplete = false;
+    
+    // Default to ADM
+    localStorage.setItem('selected-faculty', 'ADM');
 
     if (sharedId) {
         UI.showToast("Cargando horario compartido...", "info", true);
         const sharedData = await FirebaseSync.getSharedSchedule(sharedId);
         if (sharedData && sharedData.data && sharedData.faculty) {
-            const syncResult = await syncFacultyData(sharedData.faculty);
+            const syncResult = await syncFacultyData('ADM');
             if (syncResult) {
                 State.setSelectedCourses(sharedData.data);
                 updateUI();
                 renderCourses();
                 UI.showToast("¡Horario compartido cargado!", "success");
 
-                if (facultySelector) {
-                    facultySelector.classList.add('hidden');
-                }
-                localStorage.setItem('selected-faculty', sharedData.faculty);
                 initialSyncComplete = true;
 
                 // Send to GA
                 if (typeof window.gtag === 'function') {
                     window.gtag('event', 'load_shared_schedule', {
-                        'faculty': sharedData.faculty,
+                        'faculty': 'ADM',
                         'share_id': sharedId
                     });
-                }
-            } else {
-                if (facultySelector && !localStorage.getItem('selected-faculty')) {
-                    facultySelector.classList.remove('hidden');
                 }
             }
         } else {
             UI.showToast("Enlace de horario inválido o expirado.", "error");
-            if (facultySelector && !localStorage.getItem('selected-faculty')) {
-                facultySelector.classList.remove('hidden');
-            }
         }
     }
 
     if (!initialSyncComplete) {
-        const savedFaculty = localStorage.getItem('selected-faculty');
-        if (savedFaculty) {
-            const syncResult = await syncFacultyData(savedFaculty);
-            if (syncResult && facultySelector) {
-                facultySelector.classList.add('hidden');
-            }
-        }
+        const syncResult = await syncFacultyData('ADM');
     }
 
     // Initial Render (if not handled by sync)
@@ -119,118 +90,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function syncFacultyData(facultyId) {
-    if (facultyId === 'ADM' || facultyId === 'FCA') {
-        activeCoursesData = localCoursesData;
-        UI.populateCycleFilter(activeCoursesData);
-        renderCourses();
-        updateSubtitle(facultyId === 'FCA' ? 'ADM' : facultyId);
-        return true;
-    }
-
-    UI.showToast(`Sincronizando ${facultyId}...`, "info", true);
-
-    // 1. Get local data
-    const cachedStr = localStorage.getItem(`cache-courses-${facultyId}`);
-    let localCourses = null;
-    let localTime = 0;
-
-    if (cachedStr) {
-        try {
-            const cached = JSON.parse(cachedStr);
-            if (Array.isArray(cached)) {
-                localCourses = cached;
-            } else if (cached && cached.courses) {
-                localCourses = cached.courses;
-                localTime = cached.uploadedAt || 0;
-            }
-        } catch (e) {
-            console.error("Local storage formated incorrectly");
-        }
-    }
-
-    // 2. Get remote data
-    const remoteDoc = await FirebaseSync.getFacultyData(facultyId);
-    let remoteCourses = null;
-    let remoteTime = 0;
-
-    if (remoteDoc && remoteDoc.courses && remoteDoc.courses.length > 0) {
-        remoteCourses = remoteDoc.courses;
-        remoteTime = remoteDoc.lastUpdate ? (typeof remoteDoc.lastUpdate.toMillis === 'function' ? remoteDoc.lastUpdate.toMillis() : remoteDoc.lastUpdate.seconds * 1000) : 0;
-    }
-
-    let finalCourses = null;
-    let finalTime = 0;
-
-    // 3. Compare logic
-    if (remoteCourses && localCourses) {
-        if (remoteTime > localTime) {
-            // Remote is newer, prompt user
-            const useRemote = await new Promise(resolve => {
-                const modal = document.getElementById('update-prompt-modal');
-                modal.classList.remove('hidden');
-
-                document.getElementById('accept-update-btn').onclick = () => {
-                    modal.classList.add('hidden');
-                    resolve(true);
-                };
-                document.getElementById('reject-update-btn').onclick = () => {
-                    modal.classList.add('hidden');
-                    resolve(false);
-                };
-            });
-
-            if (useRemote) {
-                finalCourses = remoteCourses;
-                finalTime = remoteTime;
-                UI.showToast(`Actualizado desde oficial`, "success");
-            } else {
-                finalCourses = localCourses;
-                finalTime = localTime;
-            }
-        } else {
-            finalCourses = localCourses;
-            finalTime = localTime;
-        }
-    } else if (remoteCourses) {
-        finalCourses = remoteCourses;
-        finalTime = remoteTime;
-        UI.showToast(`${facultyId} sincronizado`, "success");
-    } else if (localCourses) {
-        finalCourses = localCourses;
-        finalTime = localTime;
-    }
-
-    // 4. Final step
-    if (finalCourses) {
-        activeCoursesData = finalCourses;
-        // Save back format
-        localStorage.setItem(`cache-courses-${facultyId}`, JSON.stringify({
-            courses: finalCourses,
-            uploadedAt: finalTime
-        }));
-
-        UI.populateCycleFilter(activeCoursesData);
-        renderCourses();
-        updateSubtitle(facultyId);
-        return true;
-    } else {
-        // Show upload custom modal because no data exists anywhere
-        const modal = document.getElementById('custom-upload-modal');
-        const title = document.getElementById('upload-modal-title');
-        const desc = document.getElementById('upload-modal-desc');
-
-        if (title) title.textContent = "¡Horario no encontrado!";
-        if (desc) desc.textContent = "Parece que esta carrera aún no tiene base de datos. Sigue los pasos de arriba para obtener tu horario y subirlo aquí.";
-
-        // Hide faculty selector so the instructions are clear
-        if (facultySelector) {
-            facultySelector.classList.add('hidden');
-        }
-
-        modal.dataset.pendingFaculty = facultyId;
-        modal.classList.remove('hidden');
-        return false;
-    }
+    activeCoursesData = localCoursesData;
+    UI.populateCycleFilter(activeCoursesData);
+    renderCourses();
+    updateSubtitle('ADM');
+    return true;
 }
 
 function setupEventListeners() {
@@ -260,11 +124,6 @@ function setupEventListeners() {
     if (closeUploadModalBtn) {
         closeUploadModalBtn.addEventListener('click', () => {
             if (customUploadModal) customUploadModal.classList.add('hidden');
-            
-            // If we don't have a selected faculty, show the selector back
-            if (!localStorage.getItem('selected-faculty') && facultySelector) {
-                facultySelector.classList.remove('hidden');
-            }
         });
     }
 
@@ -650,64 +509,8 @@ function setupEventListeners() {
         UI.showToast(`Horario ajustado: ${start}:00 a ${end}:00 ✂️`);
     });
 
-    // Faculty Selector & Persistence
-    // Crear iconos para el modal de facultades (especialmente si se inyectaron vía script)
+    // Check if lucide icons are available
     if (window.lucide) window.lucide.createIcons();
-
-    document.querySelectorAll('.faculty-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            const faculty = btn.dataset.faculty;
-            const prevFaculty = localStorage.getItem('selected-faculty');
-
-            if (State.getSelectedCourses().length > 0 && prevFaculty !== faculty) {
-                const confirmed = confirm("¡Advertencia! Si cambias de facultad perderás tu horario actual si no lo has guardado. ¿Deseas continuar?");
-                if (!confirmed) return;
-            }
-
-            // Step 1: Sync or Load
-            const success = await syncFacultyData(faculty);
-
-            // Step 2: ONLY close if success
-            if (success) {
-                if (prevFaculty !== faculty) {
-                    State.clearSchedule();
-                    updateUI();
-                }
-                localStorage.setItem('selected-faculty', faculty);
-
-                // Track GA
-                if (typeof window.gtag === 'function') {
-                    window.gtag('event', 'select_content', {
-                        'content_type': 'faculty',
-                        'item_id': faculty
-                    });
-                }
-
-                // Animation and close
-                facultySelector.classList.add('opacity-0', 'scale-95');
-                setTimeout(() => {
-                    facultySelector.classList.add('hidden');
-                    facultySelector.classList.remove('opacity-0', 'scale-95');
-                }, 300);
-
-                UI.showToast(`Bienvenido a ${faculty}`, "success");
-            }
-        });
-    });
-
-    // Cambiar Facultad desde el Footer
-    const changeFacultyBtn = document.getElementById('change-faculty-footer-btn');
-    if (changeFacultyBtn) {
-        changeFacultyBtn.addEventListener('click', () => {
-            facultySelector.classList.remove('hidden', 'opacity-0', 'scale-95');
-            if (window.lucide) window.lucide.createIcons();
-        });
-    }
-
-    // Verificar si ya existe preferencia
-    if (localStorage.getItem('selected-faculty') === 'ADM' || localStorage.getItem('selected-faculty') === 'FCA') {
-        facultySelector.classList.add('hidden');
-    }
 }
 
 function renderCourses() {
@@ -790,20 +593,11 @@ function updateUI() {
 async function loadSchedule(id) {
     const saved = Storage.getSavedSchedules().find(s => s.id === id);
     if (saved) {
-        const currentFaculty = localStorage.getItem('selected-faculty') || 'ADM';
-        let targetFaculty = saved.faculty || 'ADM'; // Retro-compatibility for older schedules
-        if (targetFaculty === 'FCA') targetFaculty = 'ADM';
+        const targetFaculty = saved.faculty || 'ADM'; 
 
-        if (currentFaculty !== targetFaculty) {
-            const confirmed = confirm(`Este horario pertenece a otra carrera (${targetFaculty}). ¿Deseas cambiar de carrera para cargarlo?`);
+        if (targetFaculty !== 'ADM' && targetFaculty !== 'FCA') {
+            const confirmed = confirm(`Este horario pertenece a otra carrera originaria (${targetFaculty}). Es posible que los cursos no sean de Administración. ¿Deseas cargarlo de todas formas?`);
             if (!confirmed) return;
-
-            const success = await syncFacultyData(targetFaculty);
-            if (success) {
-                localStorage.setItem('selected-faculty', targetFaculty);
-            } else {
-                return; // Sync failed, don't load schedule
-            }
         }
 
         State.setSelectedCourses(saved.courses);
